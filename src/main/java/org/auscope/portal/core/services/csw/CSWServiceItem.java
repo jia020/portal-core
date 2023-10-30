@@ -3,7 +3,7 @@ package org.auscope.portal.core.services.csw;
 import java.util.Arrays;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.auscope.portal.core.server.OgcServiceProviderType;
 
@@ -14,7 +14,7 @@ import org.auscope.portal.core.server.OgcServiceProviderType;
  */
 public class CSWServiceItem {
 
-    static int DEF_PAGE_SZ = 500; /* Default maximum number of CSW records per request  */
+    public static int DEF_PAGE_SZ = 500; /* Default maximum number of CSW records per request  */
 	
     private String id;
     private String title;
