@@ -31,6 +31,8 @@ import org.auscope.portal.core.services.responses.csw.CSWRecord;
 import org.auscope.portal.core.services.responses.csw.CSWRecordTransformerFactory;
 import org.auscope.portal.core.util.FileIOUtil;
 import org.objenesis.strategy.StdInstantiatorStrategy;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 
 import com.esotericsoftware.kryo.Kryo;
 
@@ -84,6 +86,8 @@ public class CSWCacheService {
     /** If true, this class will force the usage of HTTP GetMethods instead of POST methods (where possible). Useful workaround for some CSW services */
     protected boolean forceGetMethods = false;
     protected Date lastCacheUpdate;
+    
+    private KnownLayerService knownLayerService;
 
     /**
      * Creates a new instance of a CSWKeywordCacheService. This constructor is normally autowired by the spring framework.
@@ -134,6 +138,17 @@ public class CSWCacheService {
         }
         
         restoreCacheFromFile();
+    }
+    
+    // KnownLayerService needs to be informed when indexing is finished, must be @Lazy loaded to avoid circular dependencies
+    @Lazy
+    @Autowired
+    public void setKnownLayerService(KnownLayerService knownLayerService) {
+    	this.knownLayerService = knownLayerService;
+    }
+    
+    public KnownLayerService getKnownLayerService() {
+    	return this.knownLayerService;
     }
     
     /**
@@ -257,6 +272,10 @@ public class CSWCacheService {
             this.keywordsByRegistry = newKeywordByEndpointCache;
         }
         saveCacheToFile();
+        
+        // Inform KnownLayerService that there are potentially new CSWRecords
+        knownLayerService.updateKnownLayersCache();
+        
         this.updateRunning = false;
         this.lastCacheUpdate = new Date();
 
